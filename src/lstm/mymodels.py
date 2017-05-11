@@ -23,7 +23,7 @@ def lstm(max_features=96):
     :return keras model: model
     """
     model = Sequential()
-    model.add(Embedding(max_features, output_dim=256))
+    model.add(Embedding(max_features, output_dim=48))
     model.add(LSTM(128))
     model.add(Dropout(0.9))
     model.add(Dense(7, activation='softmax'))
@@ -64,6 +64,7 @@ def mlp_softmax(dim=96):
     """Baseline: Multilayer Perceptron (MLP) for multi-class softmax classification
     epoches = 200
     Test accuracy: 0.65298087672
+    
     :param dim: default=96
     :return keras model: model
     """

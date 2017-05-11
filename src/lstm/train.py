@@ -14,6 +14,7 @@ ori_path = data_path + 'delDirty.libsvm'
 if __name__ == '__main__':
     batch_size = 64
     x_train, y_train, x_val, y_val, x_test, y_test = utils.loadLibsvm(ori_path)
+    ori_y_test = y_test
     y_train = to_categorical(y_train, num_classes=7)
     y_val = to_categorical(y_val, num_classes=7)
     y_test = to_categorical(y_test, num_classes=7)
@@ -42,5 +43,9 @@ if __name__ == '__main__':
               validation_data=(x_val, y_val))
     score, acc = model.evaluate(x_test, y_test,
                                 batch_size=batch_size)
+    pred = model.predict_classes(x_test, batch_size=batch_size, verbose=0)
+
+    acc_num = sum(map(lambda x, y: x - y < 10e-4, pred, ori_y_test))
+    print('Correct percentage:', acc_num, '/', len(y_test), '=', float(acc_num)/len(y_test))
     print('Test score:', score)
     print('Test accuracy:', acc)
