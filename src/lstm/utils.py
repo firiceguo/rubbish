@@ -32,7 +32,7 @@ def splitData(file_path, test_rate=0.2, train_name='train.txt', test_name='test.
     ftest.close()
 
 
-def loadLibsvm(path='', test_rate=0.2):
+def loadLibsvm(path='', test_rate=0.2, val_rate=0.1):
     assert path, 'Please set the path.'
     x = []
     y = []
@@ -44,26 +44,29 @@ def loadLibsvm(path='', test_rate=0.2):
             xx = map(lambda k: float(k.split(':')[1]), items[1:])
             x.append(xx)
             line = f.readline()
-    train_num = int(math.ceil(len(x) * (1 - test_rate)))
+    train_num = int(math.ceil(len(x) * (1 - test_rate - val_rate)))
+    val_idx = int(math.ceil(len(x) * (1 - test_rate)))
     x_train = np.asarray(x[:train_num], dtype=float)
-    x_test = np.asarray(x[train_num:], dtype=float)
+    x_val = np.asarray(x[train_num:val_idx], dtype=float)
+    x_test = np.asarray(x[val_idx:], dtype=float)
     y_train = np.asarray(y[:train_num], dtype=float)
-    y_test = np.asarray(y[train_num:], dtype=float)
-    return x_train, y_train, x_test, y_test
+    y_val = np.asarray(y[train_num:val_idx], dtype=float)
+    y_test = np.asarray(y[val_idx:], dtype=float)
+    return x_train, y_train, x_val, y_val, x_test, y_test
 
 
 def addTimeStep(npdata, window_size=8):
     ori_shape = npdata.shape
     x = []
-    for i in xrange(ori_shape[0]):
+    for i in range(ori_shape[0]):
         temp = []
-        for j in xrange(ori_shape[1]-window_size):
+        for j in range(ori_shape[1]-window_size):
             try:
                 temp.append(npdata[i][j:j+window_size])
             except:
                 pass
         x.append(temp)
     temp = []
-    for i in xrange(len(x)):
+    for i in range(len(x)):
         temp.append(np.transpose(np.asarray(x[i], dtype=float)))
     return np.asarray(temp)

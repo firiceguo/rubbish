@@ -5,6 +5,7 @@ from __future__ import print_function
 import os
 import utils
 import mymodels
+from keras.utils import to_categorical
 
 now_path = os.getcwd() + '/'
 data_path = now_path + '../../dataset/'
@@ -12,23 +13,33 @@ ori_path = data_path + 'delDirty.libsvm'
 
 if __name__ == '__main__':
     batch_size = 64
-    timesteps = 95
-    data_dim = 96 - timesteps
-    x_train, y_train, x_test, y_test = utils.loadLibsvm(ori_path, test_rate=0.2)
+    x_train, y_train, x_val, y_val, x_test, y_test = utils.loadLibsvm(ori_path)
+    y_train = to_categorical(y_train, num_classes=7)
+    y_val = to_categorical(y_val, num_classes=7)
+    y_test = to_categorical(y_test, num_classes=7)
+
+    # do following if use lstm_stack until end
+    #
+    # timesteps = 16
+    # data_dim = 96 - timesteps
     # x_train = utils.addTimeStep(x_train, window_size=timesteps)
+    # x_val = utils.addTimeStep(x_val, window_size=timesteps)
     # x_test = utils.addTimeStep(x_test, window_size=timesteps)
+    #
+    # end
 
     print('x_train shape:', x_train.shape)
     print('x_test shape:', x_test.shape)
 
     print('Build model...')
-    model = mymodels.lstm_imdb()
+    # model = mymodels.lstm_stack(timesteps=timesteps, data_dim=data_dim)
+    model = mymodels.lstm()
 
     print('Train...')
     model.fit(x_train, y_train,
               batch_size=batch_size,
-              epochs=2,
-              validation_data=(x_test, y_test))
+              epochs=5,
+              validation_data=(x_val, y_val))
     score, acc = model.evaluate(x_test, y_test,
                                 batch_size=batch_size)
     print('Test score:', score)
