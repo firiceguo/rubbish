@@ -1,9 +1,11 @@
 #!/usr/bin/python2
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 import os
 import numpy as np
 import math
+import sys
 
 now_path = os.getcwd() + '/'
 data_path = now_path + '../dataset/delDirty.libsvm'
@@ -70,3 +72,25 @@ def addTimeStep(npdata, window_size=8):
     for i in range(len(x)):
         temp.append(np.transpose(np.asarray(x[i], dtype=float)))
     return np.asarray(temp)
+
+
+def getOpts(opts, args, batch_size=64, epoches=5, timesteps=16, model_name='lstm', test_rate=0.2, val_rate=0.1):
+    model, batch_size, epoches, timesteps, test_rate, val_rate = model_name, batch_size, epoches, timesteps, test_rate, val_rate
+    for opt, arg in opts:
+        if opt == '-h':
+            print('python train.py -m <model=\'lstm\'> -b <batch_size=64> -e <epoches=5> '
+                  '-t <timesteps=16> -r <test_rate=0.2> -v <val_rate=0.1>')
+            sys.exit(2)
+        elif opt in ("-m", "--model"):
+            model = arg
+        elif opt in ("-b", "--batch_size"):
+            batch_size = int(arg)
+        elif opt in ("-e", "--epoches"):
+            epoches = int(arg)
+        elif opt in ("-t", "--timesteps"):
+            timesteps = int(arg)
+        elif opt in ("-r", "--test_rate"):
+            test_rate = float(arg)
+        elif opt in ("-v", "--val_rate"):
+            val_rate = float(args[0])
+    return model, batch_size, epoches, timesteps, test_rate, val_rate
