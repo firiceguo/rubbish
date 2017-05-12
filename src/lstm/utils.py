@@ -4,7 +4,6 @@
 from __future__ import print_function
 import os
 import numpy as np
-import math
 import sys
 
 now_path = os.getcwd() + '/'
@@ -50,7 +49,10 @@ def loadLibsvm(path='', test_rate=0.2, val_rate=0.1):
         while line:
             items = line.split(' ')
             y.append(float(items[0]))
-            xx = map(lambda k: float(k.split(':')[1]), items[1:])
+            try:
+                xx = map(lambda k: float(k.split(':')[1]), items[1:97])
+            except:
+                pass
             x.append(xx)
             line = f.readline()
     temp_x_train = []
@@ -59,24 +61,18 @@ def loadLibsvm(path='', test_rate=0.2, val_rate=0.1):
     temp_y_val = []
     temp_x_test = []
     temp_y_test = []
-    n_train = int(10 * (1-test_rate-val_rate))
+    n_train = int(10 * (1 - test_rate - val_rate))
     n_test = int(10 * test_rate)
-    n = 0
     for i in range(len(x)):
-        if n < n_train:
+        if i % 10 < n_train:
             temp_x_train.append(x[i])
             temp_y_train.append(y[i])
-            n += 1
-        elif n < n_train + n_test:
+        elif i % 10 < n_test + n_train:
             temp_x_test.append(x[i])
             temp_y_test.append(y[i])
-            n += 1
-        elif n < 10:
+        elif i % 10 < 10:
             temp_x_val.append(x[i])
             temp_y_val.append(y[i])
-            n += 1
-        else:
-            n = 0
     x_train = np.asarray(temp_x_train, dtype=float)
     y_train = np.asarray(temp_y_train, dtype=int)
     x_val = np.asarray(temp_x_val, dtype=float)
@@ -106,7 +102,7 @@ def addTimeStep(npdata, window_size=8):
     return np.asarray(temp)
 
 
-def getOpts(opts, args, batch_size=64, epoches=5, timesteps=16, model_name='lstm', test_rate=0.2, val_rate=0.1):
+def getOpts(opts, args, batch_size=64, epoches=5, timesteps=32, model_name='lstm', test_rate=0.2, val_rate=0.1):
     """Deal with options.
     """
     model, batch_size, epoches, timesteps, test_rate, val_rate = model_name, batch_size, epoches, timesteps, test_rate, val_rate
@@ -126,5 +122,5 @@ def getOpts(opts, args, batch_size=64, epoches=5, timesteps=16, model_name='lstm
         elif opt in ("-r", "--test_rate"):
             test_rate = float(arg)
         elif opt in ("-v", "--val_rate"):
-            val_rate = float(args[0])
+            val_rate = float(args[-1])
     return model, batch_size, epoches, timesteps, test_rate, val_rate

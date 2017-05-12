@@ -8,16 +8,16 @@ import mymodels
 import sys
 import getopt
 from keras.utils import to_categorical
-import numpy as np
+import covData
 
 
-def main(argv, model_name='lstm', ori_path='', batch_size=64, epoches=5, timesteps=16, test_rate=0.1, val_rate=0.1):
+def main(argv, model_name='lstm', ori_path='', batch_size=64, epoches=5, timesteps=32, test_rate=0.2, val_rate=0.1):
     # resolve options
     try:
         opts, args = getopt.getopt(argv, "hm:b:e:t:r:v",
                                    ["model=", "batch_size=", "epoches=", "timesteps=", "test_rate=", "val_rate="])
     except getopt.GetoptError:
-        print('python train.py -m <model=\'lstm\'> -b <batch_size=64> -e <epoches=5> '
+        print('python train.py [data_path] -m <model=\'lstm\'> -b <batch_size=32> -e <epoches=5> '
               '-t <timesteps=16> -r <test_rate=0.1> -v <val_rate=0.1>')
         sys.exit(2)
     model_name, batch_size, epoches, timesteps, test_rate, val_rate = utils.getOpts(opts,
@@ -25,7 +25,6 @@ def main(argv, model_name='lstm', ori_path='', batch_size=64, epoches=5, timeste
         model_name=model_name, test_rate=test_rate, val_rate=val_rate)
 
     # assert input
-    # TODO: assert system environment
     assert ori_path, 'Please set dataset path!'
     assert model_name in ['lstm', 'mlp'], \
         'Don\'t have model ' + model_name + '! Only have model with -m: \'lstm\', \'mlp\'.'
@@ -77,7 +76,8 @@ def main(argv, model_name='lstm', ori_path='', batch_size=64, epoches=5, timeste
 
 
 if __name__ == '__main__':
-    now_path = os.getcwd() + '/'
-    data_path = now_path + '../../dataset/'
-    ori_path = data_path + 'delDirty.libsvm'
-    main(sys.argv[1:], ori_path=ori_path)
+    path = sys.argv[1]
+    infilepath = sys.argv[1]
+    outfilepath = os.getcwd() + '/../../dataset/newData.libsvm'
+    covData.dataProcess(infilepath, outfilepath)
+    main(sys.argv[2:], ori_path=outfilepath)

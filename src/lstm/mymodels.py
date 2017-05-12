@@ -7,7 +7,6 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.layers import LSTM
 from keras.optimizers import SGD
-from keras import regularizers
 
 
 """Models from [keras](https://keras-cn.readthedocs.io/en/latest/getting_started/sequential_model)
@@ -42,8 +41,9 @@ def mlp_softmax(dim=96):
 
 def lstm_stack(timesteps=8, data_dim=88):
     """Stacked LSTM for sequence classification
-    Test score: 1.05636618459
-    Test accuracy: 0.692350956063
+    Correct percentage: 594 / 808 = 0.735148514851
+    Test score: 0.768332143821
+    Test accuracy: 0.735148515442
 
     :param timesteps:
     :param data_dim:
