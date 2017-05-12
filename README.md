@@ -1,6 +1,6 @@
 ## Using
 
-'''bash
+```bash
 python train.py [option] <value>
 
 Options:
@@ -10,7 +10,7 @@ Options:
     -t  --timesteps:    config if using lstm_stack, 16 for default
     -r  --test_rate:    the percentage for test, 0.2 for default
     -v  --val_rate:     the percentage for validation, 0.1 for default
-'''
+```
 
 ## Environment
 
