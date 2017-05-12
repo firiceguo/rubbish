@@ -8,16 +8,17 @@ import mymodels
 import sys
 import getopt
 from keras.utils import to_categorical
+import numpy as np
 
 
-def main(argv, model_name='lstm', ori_path='', batch_size=64, epoches=5, timesteps=16, test_rate=0.2, val_rate=0.1):
+def main(argv, model_name='lstm', ori_path='', batch_size=64, epoches=5, timesteps=16, test_rate=0.1, val_rate=0.1):
     # resolve options
     try:
         opts, args = getopt.getopt(argv, "hm:b:e:t:r:v",
                                    ["model=", "batch_size=", "epoches=", "timesteps=", "test_rate=", "val_rate="])
     except getopt.GetoptError:
         print('python train.py -m <model=\'lstm\'> -b <batch_size=64> -e <epoches=5> '
-              '-t <timesteps=16> -r <test_rate=0.2> -v <val_rate=0.1>')
+              '-t <timesteps=16> -r <test_rate=0.1> -v <val_rate=0.1>')
         sys.exit(2)
     model_name, batch_size, epoches, timesteps, test_rate, val_rate = utils.getOpts(opts,
         args, batch_size=batch_size, epoches=epoches, timesteps=timesteps,
@@ -26,8 +27,8 @@ def main(argv, model_name='lstm', ori_path='', batch_size=64, epoches=5, timeste
     # assert input
     # TODO: assert system environment
     assert ori_path, 'Please set dataset path!'
-    assert model_name in ['lstm', 'mlp', 'lstm_stack'], \
-        'Don\'t have model ' + model_name + '! Only have model with -m: \'lstm\', \'mlp\', \'lstm_stack\'.'
+    assert model_name in ['lstm', 'mlp'], \
+        'Don\'t have model ' + model_name + '! Only have model with -m: \'lstm\', \'mlp\'.'
 
     # load clean libsvm data
     batch_size = batch_size
@@ -46,11 +47,9 @@ def main(argv, model_name='lstm', ori_path='', batch_size=64, epoches=5, timeste
     print('Using model', model_name, ', with epoches', epoches, ', and batch_size is', batch_size)
 
     # building different models
-    if model_name == 'lstm':
-        model = mymodels.lstm()
-    elif model_name == 'mlp':
+    if model_name == 'mlp':
         model = mymodels.mlp_softmax()
-    elif model_name == 'lstm_stack':
+    elif model_name == 'lstm':
         print('Timesteps is:', timesteps)
         timesteps = timesteps
         data_dim = 96 - timesteps
@@ -69,9 +68,9 @@ def main(argv, model_name='lstm', ori_path='', batch_size=64, epoches=5, timeste
     # evaluate predict results
     score, acc = model.evaluate(x_test, y_test,
                                 batch_size=batch_size)
-    pred = model.predict_classes(x_test, batch_size=batch_size, verbose=0)
+    pred = model.predict_classes(x_test, verbose=1)
 
-    acc_num = sum(map(lambda x, y: x - y < 10e-4, pred, ori_y_test))
+    acc_num = sum(map(lambda x, y: abs(x - y) < 10e-3, pred, ori_y_test))
     print('\n\nCorrect percentage:', acc_num, '/', len(y_test), '=', float(acc_num)/len(y_test))
     print('Test score:', score)
     print('Test accuracy:', acc)

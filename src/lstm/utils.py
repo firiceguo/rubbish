@@ -41,6 +41,8 @@ def loadLibsvm(path='', test_rate=0.2, val_rate=0.1):
     The data must be clean (have the same number of columns).
     """
     assert path, 'Please set the path.'
+    test_rate = round(test_rate, 1)
+    val_rate = round(val_rate, 1)
     x = []
     y = []
     with open(path, 'r') as f:
@@ -51,14 +53,36 @@ def loadLibsvm(path='', test_rate=0.2, val_rate=0.1):
             xx = map(lambda k: float(k.split(':')[1]), items[1:])
             x.append(xx)
             line = f.readline()
-    train_num = int(math.ceil(len(x) * (1 - test_rate - val_rate)))
-    val_idx = int(math.ceil(len(x) * (1 - test_rate)))
-    x_train = np.asarray(x[:train_num], dtype=float)
-    x_val = np.asarray(x[train_num:val_idx], dtype=float)
-    x_test = np.asarray(x[val_idx:], dtype=float)
-    y_train = np.asarray(y[:train_num], dtype=float)
-    y_val = np.asarray(y[train_num:val_idx], dtype=float)
-    y_test = np.asarray(y[val_idx:], dtype=float)
+    temp_x_train = []
+    temp_y_train = []
+    temp_x_val = []
+    temp_y_val = []
+    temp_x_test = []
+    temp_y_test = []
+    n_train = int(10 * (1-test_rate-val_rate))
+    n_test = int(10 * test_rate)
+    n = 0
+    for i in range(len(x)):
+        if n < n_train:
+            temp_x_train.append(x[i])
+            temp_y_train.append(y[i])
+            n += 1
+        elif n < n_train + n_test:
+            temp_x_test.append(x[i])
+            temp_y_test.append(y[i])
+            n += 1
+        elif n < 10:
+            temp_x_val.append(x[i])
+            temp_y_val.append(y[i])
+            n += 1
+        else:
+            n = 0
+    x_train = np.asarray(temp_x_train, dtype=float)
+    y_train = np.asarray(temp_y_train, dtype=int)
+    x_val = np.asarray(temp_x_val, dtype=float)
+    y_val = np.asarray(temp_y_val, dtype=int)
+    x_test = np.asarray(temp_x_test, dtype=float)
+    y_test = np.asarray(temp_y_test, dtype=int)
     return x_train, y_train, x_val, y_val, x_test, y_test
 
 
@@ -89,7 +113,7 @@ def getOpts(opts, args, batch_size=64, epoches=5, timesteps=16, model_name='lstm
     for opt, arg in opts:
         if opt == '-h':
             print('python train.py -m <model=\'lstm\'> -b <batch_size=64> -e <epoches=5> '
-                  '-t <timesteps=16> -r <test_rate=0.2> -v <val_rate=0.1>')
+                  '-t <timesteps=16> -r <test_rate=0.1> -v <val_rate=0.1>')
             sys.exit(2)
         elif opt in ("-m", "--model"):
             model = arg
