@@ -12,6 +12,8 @@ data_path = now_path + '../dataset/delDirty.libsvm'
 
 
 def splitData(file_path, test_rate=0.2, train_name='train.txt', test_name='test.txt'):
+    """Split 1 file to 2 files based on test_rate
+    """
     f = open(file_path, 'r')
     ftrain = open(train_name, 'w')
     ftest = open(test_name, 'w')
@@ -35,6 +37,9 @@ def splitData(file_path, test_rate=0.2, train_name='train.txt', test_name='test.
 
 
 def loadLibsvm(path='', test_rate=0.2, val_rate=0.1):
+    """Load data from libsvm file to numpy array for training, validation, test part.
+    The data must be clean (have the same number of columns).
+    """
     assert path, 'Please set the path.'
     x = []
     y = []
@@ -58,6 +63,9 @@ def loadLibsvm(path='', test_rate=0.2, val_rate=0.1):
 
 
 def addTimeStep(npdata, window_size=8):
+    """Transfer data which have shape like (1000, 32) to (100, 8, 24).
+    Where 8 is the window size, 24 = 32 - 8.
+    """
     ori_shape = npdata.shape
     x = []
     for i in range(ori_shape[0]):
@@ -75,6 +83,8 @@ def addTimeStep(npdata, window_size=8):
 
 
 def getOpts(opts, args, batch_size=64, epoches=5, timesteps=16, model_name='lstm', test_rate=0.2, val_rate=0.1):
+    """Deal with options.
+    """
     model, batch_size, epoches, timesteps, test_rate, val_rate = model_name, batch_size, epoches, timesteps, test_rate, val_rate
     for opt, arg in opts:
         if opt == '-h':
