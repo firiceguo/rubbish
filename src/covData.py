@@ -1,7 +1,6 @@
 #!/usr/bin/python2
 # -*- coding: utf-8 -*-
 from __future__ import print_function
-import os
 
 
 def dataProcess(infilepath='', outfilepath=''):
@@ -30,7 +29,7 @@ def dataProcess(infilepath='', outfilepath=''):
         for ele in arr[1:]:
             pair = ele.split(":")
             fdic[int(pair[0])] = pair[1]
-        for i in range(1,97):
+        for i in range(1, 97):
             if i in fdic:
                 s += " " + str(i) + ":" + fdic[i].split('\n')[0]
                 continue
@@ -38,9 +37,3 @@ def dataProcess(infilepath='', outfilepath=''):
                 fdic[i] = '0.0'
                 s += " " + str(i) + ":" + fdic[i]
         outfile.write(s + '\n')
-
-
-if __name__ == '__main__':
-    infilepath = './DS19.libsvm'
-    outfilepath = os.getcwd() + '/newData.libsvm'
-    dataProcess(infilepath, outfilepath)

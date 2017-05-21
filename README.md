@@ -50,11 +50,4 @@ Note: If the environment is not match, there will be bugs.
     ├── mymodels.py
     ├── train.py
     └── utils.py
-
 ```
-
-## Bugs:
-
-1. Can't use Pooling layers
-
-    Keras 2.0+ don't support theano-0.8: `TypeError: pool_2d() got an unexpected keyword argument 'ws'`
